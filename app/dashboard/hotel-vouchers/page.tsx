@@ -10,6 +10,8 @@ import { downloadHotelVoucherPdf, getHotelVoucherPdfBlob } from "@/lib/hotelVouc
 import Navbar from "@/components/Navbar";
 import Modal from "@/components/Modal";
 import RefreshButton from "@/components/RefreshButton";
+import CsvTools from "@/components/CsvTools";
+import { VOUCHER_CSV } from "@/lib/csvTemplates";
 import PassportScan from "@/components/PassportScan";
 import AutoGrowInput from "@/components/AutoGrowInput";
 import type { PassportDetails } from "@/lib/passport";
@@ -346,6 +348,7 @@ export default function HotelVouchersPage() {
                 <span className={styles.searchIcon}>{SearchIcon}</span>
                 <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by voucher, guest, hotel…" />
               </div>
+              <CsvTools name="hotel-vouchers" template={VOUCHER_CSV} rows={vouchers} importPath="/hotel-vouchers" canImport={isAdmin || perms.create} onImported={load} />
               <RefreshButton onRefresh={load} />
               {(isAdmin || perms.create) && (
                 <button className={styles.createBtn} onClick={openCreate}>

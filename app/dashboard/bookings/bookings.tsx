@@ -9,6 +9,8 @@ import { downloadItineraryPdf, escapeHtml, readFileAsDataURL } from "@/lib/itine
 import { formatDateDMY } from "@/lib/dates";
 import Navbar from "@/components/Navbar";
 import RefreshButton from "@/components/RefreshButton";
+import CsvTools from "@/components/CsvTools";
+import { BOOKING_CSV, BOOKING_OMIT } from "@/lib/csvTemplates";
 import Modal from "@/components/Modal";
 import Toast, { ToastState } from "@/components/Toast";
 import dash from "../dashboard.module.css";
@@ -887,6 +889,32 @@ export default function BookingsPage() {
                   placeholder="Search by client, phone, package, date or month…"
                 />
               </div>
+              <CsvTools
+                name="bookings"
+                template={BOOKING_CSV}
+                omit={BOOKING_OMIT}
+                rows={bookings}
+                importPath="/bookings"
+                // Readable helpers next to the ids; on import they fill a blank
+                // userId / packageId (by staff name / package title).
+                exportExtra={[
+                  { header: "bookedBy", value: (b) => String(b.userName ?? "") },
+                  { header: "packageTitle", value: (b) => String(b.packageTitle ?? "") },
+                ]}
+                toImport={(item) => {
+                  const next = { ...item };
+                  if (!next.userId) {
+                    const by = String(item.__bookedBy ?? "").trim().toLowerCase();
+                    next.userId = users.find((u) => u.name.trim().toLowerCase() === by)?.id || user?.id || "";
+                  }
+                  if (!next.packageId) {
+                    const t = String(item.__packageTitle ?? "").trim().toLowerCase();
+                    next.packageId = packages.find((p) => p.packageTitle.trim().toLowerCase() === t)?.id ?? null;
+                  }
+                  return next;
+                }}
+                onImported={load}
+              />
               <RefreshButton onRefresh={load} />
               <button className={styles.createBtn} onClick={openCreate}>
                 + Create Booking

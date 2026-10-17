@@ -250,6 +250,8 @@ export type HotelVoucherInput = {
 };
 export type HotelVoucher = HotelVoucherInput & { id: string; createdAt: string; createdBy: string };
 
+export type BulkImportResult = { created: number; errors: { row: number; error: string }[] };
+
 // Per-user, per-role granular CRUD permissions — a finer dial than just
 // having the Account/Currency role at all. Only roles that gate a real
 // list/create/edit/delete feature show up here (see GOVERNED_ROLES in
@@ -760,6 +762,9 @@ export const api = {
   // Fresh copy of the logged-in user (roles + granted menus) — read on every
   // page load so admin changes apply without logging out and back in.
   getMe: () => request<User>("/auth/me"),
+  // CSV import from a list page — every row in one request; see backend app/bulk.py.
+  bulkImport: (path: string, items: Record<string, unknown>[]) =>
+    request<BulkImportResult>(`${path}/bulk-import`, { method: "POST", body: JSON.stringify({ items }) }),
   getMenuAccess: (userId: string) => request<{ userId: string; menus: string[] }>(`/access/${userId}/menus`),
   setMenuAccess: (userId: string, menus: string[]) =>
     request<{ userId: string; menus: string[] }>(`/access/${userId}/menus`, {

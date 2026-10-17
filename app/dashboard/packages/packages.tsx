@@ -2,12 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { api, DayImage, Package, PackageData } from "@/lib/api";
+import { api, DayImage, Package, PackageData, PackageDay } from "@/lib/api";
 import { SCANNER_QR_BASE64 } from "@/lib/scannerQr";
 import { buildPreviewHtml, downloadItineraryPdf, readFileAsDataURL, splitCommas } from "@/lib/itinerary";
 import { joinHtmlLines, splitHtmlLines } from "@/lib/richtext";
 import Navbar from "@/components/Navbar";
 import RefreshButton from "@/components/RefreshButton";
+import CsvTools from "@/components/CsvTools";
+import { PACKAGE_CSV, PACKAGE_OMIT } from "@/lib/csvTemplates";
 import Modal from "@/components/Modal";
 import RichTextField from "@/components/RichTextField";
 import Toast, { ToastState } from "@/components/Toast";
@@ -811,6 +813,19 @@ export default function PackagesPage() {
                     placeholder="Search by title, company or duration…"
                   />
                 </div>
+                <CsvTools
+                  name="packages"
+                  template={PACKAGE_CSV}
+                  omit={PACKAGE_OMIT}
+                  rows={savedPackages}
+                  importPath="/packages"
+                  // Day photos are base64 — exported without them.
+                  toExport={(p) => ({
+                    ...p,
+                    days: ((p.days as PackageDay[]) || []).map((d) => ({ ...d, images: [] })),
+                  })}
+                  onImported={loadPackages}
+                />
                 <RefreshButton onRefresh={loadPackages} />
                 <button className={`${styles.btn} ${styles.btnSuccess}`} onClick={openCreate}>
                   <i className="fas fa-plus" /> Create Package

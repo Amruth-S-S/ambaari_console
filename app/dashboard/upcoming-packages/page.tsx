@@ -17,6 +17,8 @@ import {
 import Navbar from "@/components/Navbar";
 import Modal from "@/components/Modal";
 import RefreshButton from "@/components/RefreshButton";
+import CsvTools from "@/components/CsvTools";
+import { UPCOMING_CSV } from "@/lib/csvTemplates";
 import Toast, { ToastState } from "@/components/Toast";
 import dash from "../dashboard.module.css";
 // Same list/table/modal shape as the ledgers — reuse their styling.
@@ -199,6 +201,7 @@ export default function UpcomingPackagesPage() {
                 <span className={styles.searchIcon}>{SearchIcon}</span>
                 <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by package or month…" />
               </div>
+              <CsvTools name="upcoming-packages" template={UPCOMING_CSV} rows={entries} importPath="/upcoming-packages" onImported={load} />
               <RefreshButton onRefresh={load} />
               <button className={styles.createBtn} onClick={openCreate}>
                 + Upcoming Package Dates

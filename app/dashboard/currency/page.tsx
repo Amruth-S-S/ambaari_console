@@ -9,6 +9,8 @@ import { formatDateDMY } from "@/lib/dates";
 import Navbar from "@/components/Navbar";
 import Modal from "@/components/Modal";
 import RefreshButton from "@/components/RefreshButton";
+import CsvTools from "@/components/CsvTools";
+import { CURRENCY_CSV } from "@/lib/csvTemplates";
 import PassportScan from "@/components/PassportScan";
 import AutoGrowInput from "@/components/AutoGrowInput";
 import { EMPTY_PASSPORT_EXTRAS, PassportDetails } from "@/lib/passport";
@@ -357,6 +359,7 @@ export default function CurrencyLedgerPage() {
                   placeholder="Search by client, passport, currency…"
                 />
               </div>
+              <CsvTools name="currency" template={CURRENCY_CSV} rows={entries} importPath="/currency-entries" canImport={isAdmin || perms.create} onImported={load} />
               <RefreshButton onRefresh={load} />
               {(isAdmin || perms.create) && (
                 <button className={styles.createBtn} onClick={openCreate}>

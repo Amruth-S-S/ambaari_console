@@ -5,6 +5,7 @@ import { api, TravelListEntry } from "@/lib/api";
 import { formatDateDMY } from "@/lib/dates";
 import Navbar from "@/components/Navbar";
 import RefreshButton from "@/components/RefreshButton";
+import CsvTools from "@/components/CsvTools";
 import dash from "../dashboard.module.css";
 import styles from "./travel-list.module.css";
 
@@ -65,6 +66,9 @@ function groupBookings(bookings: TravelListEntry[]): Group[] {
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
 }
+
+// Export-only (the Travel List is built from bookings) — one row per booking.
+const TRAVEL_LIST_CSV = { travelDate: "", packageTitle: "", location: "", clientName: "", adults: "", children: "", infants: "", userName: "" };
 
 export default function TravelListPage() {
   const [bookings, setBookings] = useState<TravelListEntry[]>([]);
@@ -199,6 +203,7 @@ export default function TravelListPage() {
                   placeholder="Search by date, package or client…"
                 />
               </div>
+              <CsvTools name="travel-list" template={TRAVEL_LIST_CSV} rows={bookings} />
               <RefreshButton onRefresh={load} />
             </div>
           </div>

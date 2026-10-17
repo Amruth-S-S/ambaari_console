@@ -6,6 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 import { api, Role, User } from "@/lib/api";
 import Navbar from "@/components/Navbar";
 import RefreshButton from "@/components/RefreshButton";
+import CsvTools from "@/components/CsvTools";
+import { USER_CSV } from "@/lib/csvTemplates";
 import Modal from "@/components/Modal";
 import Toast, { ToastState } from "@/components/Toast";
 import dash from "../dashboard.module.css";
@@ -257,6 +259,26 @@ export default function UsersPage() {
                   placeholder="Search by name, email or phone…"
                 />
               </div>
+              <CsvTools
+                name="users"
+                template={USER_CSV}
+                rows={users}
+                importPath="/users"
+                // Passwords are never exported — fill the "password" column
+                // (6+ characters) for each new user before importing.
+                exportExtra={[{ header: "roleNames", value: (u) => ((u.roleNames as string[]) || []).join("; ") }]}
+                toImport={(item) => {
+                  const ids = (item.roleIds as string[]) || [];
+                  if (ids.length || !item.__roleNames) return { ...item, phone: item.phone || null };
+                  const names = String(item.__roleNames).split(/[;,]/).map((n) => n.trim().toLowerCase()).filter(Boolean);
+                  return {
+                    ...item,
+                    phone: item.phone || null,
+                    roleIds: roles.filter((r) => names.includes(r.name.trim().toLowerCase())).map((r) => r.id),
+                  };
+                }}
+                onImported={load}
+              />
               <RefreshButton onRefresh={load} />
               <button className={styles.createBtn} onClick={openCreate}>
                 + Create user

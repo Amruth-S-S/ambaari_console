@@ -8,6 +8,8 @@ import { api, AccountEntry } from "@/lib/api";
 import { formatDateDMY } from "@/lib/dates";
 import Navbar from "@/components/Navbar";
 import RefreshButton from "@/components/RefreshButton";
+import CsvTools from "@/components/CsvTools";
+import { ACCOUNT_CSV } from "@/lib/csvTemplates";
 import Modal from "@/components/Modal";
 import Toast, { ToastState } from "@/components/Toast";
 import dash from "../dashboard.module.css";
@@ -393,6 +395,7 @@ export default function AccountsPage() {
                   placeholder="Search by agent, client, destination…"
                 />
               </div>
+              <CsvTools name="accounts" template={ACCOUNT_CSV} rows={entries} importPath="/accounts" canImport={isAdmin || perms.create} onImported={load} />
               <RefreshButton onRefresh={load} />
               {(isAdmin || perms.create) && (
                 <button className={styles.createBtn} onClick={openCreate}>

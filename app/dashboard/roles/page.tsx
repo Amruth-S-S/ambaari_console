@@ -6,6 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 import { api, Role } from "@/lib/api";
 import Navbar from "@/components/Navbar";
 import RefreshButton from "@/components/RefreshButton";
+import CsvTools from "@/components/CsvTools";
+import { ROLE_CSV } from "@/lib/csvTemplates";
 import Modal from "@/components/Modal";
 import Toast, { ToastState } from "@/components/Toast";
 import dash from "../dashboard.module.css";
@@ -176,6 +178,7 @@ export default function RolesPage() {
                   placeholder="Search by role name…"
                 />
               </div>
+              <CsvTools name="roles" template={ROLE_CSV} rows={roles} importPath="/roles" onImported={load} />
               <RefreshButton onRefresh={load} />
               <button className={styles.createBtn} onClick={openCreate}>
                 + Create role

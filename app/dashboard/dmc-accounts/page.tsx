@@ -9,6 +9,8 @@ import { formatDateDMY } from "@/lib/dates";
 import Navbar from "@/components/Navbar";
 import Modal from "@/components/Modal";
 import RefreshButton from "@/components/RefreshButton";
+import CsvTools from "@/components/CsvTools";
+import { DMC_CSV } from "@/lib/csvTemplates";
 import Toast, { ToastState } from "@/components/Toast";
 import dash from "../dashboard.module.css";
 // Same page shape as the Account/Currency ledgers — reuse their styling.
@@ -520,6 +522,7 @@ export default function DmcAccountsPage() {
                   placeholder="Search by name, destination, payment…"
                 />
               </div>
+              <CsvTools name="dmc-accounts" template={DMC_CSV} rows={entries} importPath="/dmc-accounts" canImport={isAdmin || perms.create} onImported={load} />
               <RefreshButton onRefresh={load} />
               {(isAdmin || perms.create) && (
                 <button className={styles.createBtn} onClick={openCreate}>

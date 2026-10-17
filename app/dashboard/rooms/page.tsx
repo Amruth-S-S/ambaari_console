@@ -13,6 +13,8 @@ import {
 } from "@/lib/roomListPdf";
 import Navbar from "@/components/Navbar";
 import RefreshButton from "@/components/RefreshButton";
+import CsvTools from "@/components/CsvTools";
+import { ROOM_CSV } from "@/lib/csvTemplates";
 import PassportScan from "@/components/PassportScan";
 import AutoGrowInput from "@/components/AutoGrowInput";
 import { EMPTY_PASSPORT_EXTRAS, genderFromSex, PassportDetails } from "@/lib/passport";
@@ -552,6 +554,23 @@ export default function RoomsPage() {
                   placeholder="Search by Sl No, client or package…"
                 />
               </div>
+              <CsvTools
+                name="room-lists"
+                template={ROOM_CSV}
+                rows={entries}
+                importPath="/rooms"
+                canImport={isAdmin || perms.create}
+                // packageId may be blank in a hand-made CSV — find it from packageTitle.
+                toImport={(item) => {
+                  if (!item.packageId && item.packageTitle) {
+                    const t = String(item.packageTitle).trim().toLowerCase();
+                    const pkg = packages.find((p) => p.packageTitle.trim().toLowerCase() === t);
+                    if (pkg) return { ...item, packageId: pkg.id, packageType: pkg.packageType };
+                  }
+                  return item;
+                }}
+                onImported={load}
+              />
               <RefreshButton onRefresh={load} />
               {(isAdmin || perms.create) && (
                 <button className={styles.createBtn} onClick={openCreate}>
