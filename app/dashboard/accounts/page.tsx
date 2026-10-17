@@ -264,6 +264,53 @@ export default function AccountsPage() {
 
   const groups = useMemo(() => groupEntries(filtered), [filtered]);
 
+  // "Select all" + "Delete selected". Ids no longer in the list (deleted,
+  // reloaded) drop out of the selection automatically.
+  const canDelete = isAdmin || perms.delete;
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    setSelected((prev) => {
+      const ids = new Set(entries.map((e) => e.id));
+      const next = new Set([...prev].filter((id) => ids.has(id)));
+      return next.size === prev.size ? prev : next;
+    });
+  }, [entries]);
+  const allSelected = filtered.length > 0 && filtered.every((e) => selected.has(e.id));
+
+  function toggleSelect(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    setSelected(allSelected ? new Set() : new Set(filtered.map((e) => e.id)));
+  }
+
+  function onDeleteSelected() {
+    const ids = [...selected];
+    window.clearTimeout(toastTimer.current);
+    setToast({
+      type: "confirm",
+      text: `Delete ${ids.length} selected ${ids.length === 1 ? "entry" : "entries"}? This cannot be undone.`,
+      onCancel: () => setToast(null),
+      onConfirm: async () => {
+        setToast(null);
+        try {
+          const { deleted } = await api.deleteAccounts(ids);
+          setSelected(new Set());
+          notify("ok", `${deleted} ${deleted === 1 ? "entry" : "entries"} deleted`);
+          load();
+        } catch (e) {
+          notify("err", e instanceof Error ? e.message : "Failed to delete");
+        }
+      },
+    });
+  }
+
   function toggleGroup(key: string) {
     setOpenGroups((prev) => {
       const next = new Set(prev);
@@ -395,6 +442,12 @@ export default function AccountsPage() {
                   placeholder="Search by agent, client, destination…"
                 />
               </div>
+              {canDelete && selected.size > 0 && (
+                <button className={styles.bulkDeleteBtn} onClick={onDeleteSelected}>
+                  {DeleteIcon}
+                  Delete selected ({selected.size})
+                </button>
+              )}
               <CsvTools name="accounts" template={ACCOUNT_CSV} rows={entries} importPath="/accounts" canImport={isAdmin || perms.create} onImported={load} />
               <RefreshButton onRefresh={load} />
               {(isAdmin || perms.create) && (
@@ -416,6 +469,17 @@ export default function AccountsPage() {
               <table className={styles.table}>
                 <thead>
                   <tr>
+                    {canDelete && (
+                      <th className={styles.checkCell}>
+                        <input
+                          type="checkbox"
+                          checked={allSelected}
+                          onChange={toggleSelectAll}
+                          aria-label="Select all entries"
+                          title={allSelected ? "Clear selection" : `Select all ${filtered.length} entries`}
+                        />
+                      </th>
+                    )}
                     <th></th>
                     <th>Sl No</th>
                     <th>Date</th>
@@ -444,6 +508,16 @@ export default function AccountsPage() {
                     const rows = isMulti && !open ? [g.entries[0]] : g.entries;
                     return rows.map((e, i) => (
                       <tr key={e.id} className={isMulti ? styles.groupedRow : undefined}>
+                        {canDelete && (
+                          <td className={styles.checkCell}>
+                            <input
+                              type="checkbox"
+                              checked={selected.has(e.id)}
+                              onChange={() => toggleSelect(e.id)}
+                              aria-label={`Select entry ${e.slNo || ""}`}
+                            />
+                          </td>
+                        )}
                         {i === 0 && (
                           <td className={styles.chevronCell} rowSpan={rows.length}>
                             {isMulti && (

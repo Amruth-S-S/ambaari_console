@@ -5,7 +5,7 @@
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
   (process.env.NODE_ENV === "production"
-    ? "https://console-backend-two.vercel.app"
+    ? "https://console.akms.org.in"
     : "http://localhost:8000");
 
 // Shared, app-wide (not per-package) currency exchange rates — one pair of
@@ -680,6 +680,8 @@ export const api = {
   updateAccount: (id: string, body: AccountEntryInput) =>
     request<AccountEntry>(`/accounts/${id}`, { method: "PUT", body: JSON.stringify(body) }),
   deleteAccount: (id: string) => request<void>(`/accounts/${id}`, { method: "DELETE" }),
+  deleteAccounts: (ids: string[]) =>
+    request<{ deleted: number }>("/accounts/bulk-delete", { method: "POST", body: JSON.stringify({ ids }) }),
   uploadAccountAttachment: (id: string, file: { name: string; type: string; data: string }) =>
     request<AccountEntry>(`/accounts/${id}/attachments`, {
       method: "POST",

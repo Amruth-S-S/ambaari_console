@@ -293,6 +293,7 @@ export default function UsersPage() {
               {search ? "No accounts match your search." : "No accounts yet."}
             </div>
           ) : (
+            <div className={styles.tableScroll}>
             <table className={styles.table}>
               <thead>
                 <tr>
@@ -301,7 +302,7 @@ export default function UsersPage() {
                   <th>Phone</th>
                   <th>Role</th>
                   <th>Assigned Role</th>
-                  <th></th>
+                  <th className={styles.actionsCol}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -329,7 +330,7 @@ export default function UsersPage() {
                     <td style={{ color: "var(--ink-dim)" }}>
                       {u.roleNames.length > 0 ? u.roleNames.join(", ") : "—"}
                     </td>
-                    <td>
+                    <td className={styles.actionsCol}>
                       <div className={styles.actions}>
                         <button
                           className={styles.iconBtn}
@@ -355,6 +356,7 @@ export default function UsersPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </section>
       </div>

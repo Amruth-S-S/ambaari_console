@@ -896,13 +896,16 @@ export default function BookingsPage() {
                 rows={bookings}
                 importPath="/bookings"
                 // Readable helpers next to the ids; on import they fill a blank
-                // userId / packageId (by staff name / package title).
+                // or unknown userId / packageId (by staff name / package title)
+                // — e.g. ids from a CSV exported before the MySQL move.
                 exportExtra={[
                   { header: "bookedBy", value: (b) => String(b.userName ?? "") },
                   { header: "packageTitle", value: (b) => String(b.packageTitle ?? "") },
                 ]}
                 toImport={(item) => {
                   const next = { ...item };
+                  if (next.userId && !users.some((u) => u.id === String(next.userId))) next.userId = "";
+                  if (next.packageId && !packages.some((p) => p.id === String(next.packageId))) next.packageId = "";
                   if (!next.userId) {
                     const by = String(item.__bookedBy ?? "").trim().toLowerCase();
                     next.userId = users.find((u) => u.name.trim().toLowerCase() === by)?.id || user?.id || "";

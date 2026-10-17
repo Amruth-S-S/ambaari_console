@@ -118,6 +118,44 @@
   border-bottom: none;
 }
 
+.checkCell {
+  width: 36px;
+  padding-left: 16px !important;
+  padding-right: 0 !important;
+}
+
+.checkCell input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.bulkDeleteBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--danger-soft);
+  color: var(--danger);
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.bulkDeleteBtn:hover {
+  background: rgba(255, 107, 107, 0.2);
+}
+
+.bulkDeleteBtn svg {
+  width: 15px;
+  height: 15px;
+}
+
 .chevronCell {
   width: 32px;
   padding-left: 12px !important;

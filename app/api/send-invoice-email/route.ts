@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
   (process.env.NODE_ENV === "production"
-    ? "https://console-backend-two.vercel.app"
+    ? "https://console.akms.org.in"
     : "http://localhost:8000");
 
 type AdvancePayment = { amount: string; date: string; note: string };

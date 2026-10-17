@@ -157,6 +157,21 @@
   color: var(--ink-dim);
 }
 
+/* Long emails can make the table wider than the card — scroll it sideways
+   instead of clipping, and keep the Edit/Delete column pinned in view. */
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table th.actionsCol,
+.table td.actionsCol {
+  position: sticky;
+  right: 0;
+  background: var(--surface);
+  text-align: right;
+  white-space: nowrap;
+}
+
 .actions {
   display: flex;
   justify-content: flex-end;
